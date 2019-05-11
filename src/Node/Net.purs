@@ -464,16 +464,13 @@ localPort socket = do
   port <- runEffectFn1 localPortImpl socket
   pure (toMaybe port)
 
-foreign import onCloseServerImpl :: EffectFn2 Server (Effect Unit) Unit
-
 -- | Attaches the callback as a listener to the `'close'` event.
 -- |
 -- | `'close'` is emitted when a close occurs.
 -- | Will not be emitted until all connections have ended.
 onCloseServer :: Server -> Effect Unit -> Effect Unit
-onCloseServer server callback = runEffectFn2 onCloseServerImpl server callback
-
-foreign import onCloseSocketImpl :: EffectFn2 Socket (EffectFn1 Boolean Unit) Unit
+onCloseServer server callback =
+  runEffectFn3 onServerImpl "close" server callback
 
 -- | Attaches the callback as a listener to the `'close'` event.
 -- | The `Boolean` represents whether an error happened during transmission.
@@ -481,27 +478,28 @@ foreign import onCloseSocketImpl :: EffectFn2 Socket (EffectFn1 Boolean Unit) Un
 -- | `'close'` is emitted when an close occurs.
 onCloseSocket :: Socket -> (Boolean -> Effect Unit) -> Effect Unit
 onCloseSocket socket callback =
-  runEffectFn2
-    onCloseSocketImpl
+  runEffectFn3
+    onSocketImpl
+    "close"
     socket
     (mkEffectFn1 \hadError -> callback hadError)
-
-foreign import onConnectImpl :: EffectFn2 Socket (Effect Unit) Unit
 
 -- | Attaches the callback as a listener to the `'connect'` event.
 -- |
 -- | `'connect'` is emitted when a new connection is successfully establed.
 onConnect :: Socket -> Effect Unit -> Effect Unit
-onConnect socket callback = runEffectFn2 onConnectImpl socket callback
-
-foreign import onConnectionImpl :: EffectFn2 Server (EffectFn1 Socket Unit) Unit
+onConnect socket callback = runEffectFn3 onSocketImpl "connect" socket callback
 
 -- | Attaches the callback as a listener to the `'connection'` event.
 -- |
 -- | `'connection'` is emitted when a new connection is made.
 onConnection :: Server -> (Socket -> Effect Unit) -> Effect Unit
 onConnection server callback =
-  runEffectFn2 onConnectionImpl server (mkEffectFn1 \socket -> callback socket)
+  runEffectFn3
+    onServerImpl
+    "connection"
+    server
+    (mkEffectFn1 \socket -> callback socket)
 
 foreign import onDataImpl :: EffectFn3 Socket (EffectFn1 Buffer Unit) (EffectFn1 String Unit) Unit
 
@@ -517,32 +515,28 @@ onData socket callback =
     (mkEffectFn1 \buffer -> callback $ Left buffer)
     (mkEffectFn1 \str -> callback $ Right str)
 
-foreign import onDrainImpl :: EffectFn2 Socket (Effect Unit) Boolean
-
 -- | Attaches the callback as a listener to the `'drain'` event.
 -- |
 -- | `'drain'` is emitted when the write buffer is empty.
 onDrain :: Socket -> Effect Unit -> Effect Boolean
-onDrain socket callback = runEffectFn2 onDrainImpl socket callback
-
-foreign import onEndImpl :: EffectFn2 Socket (Effect Unit) Unit
+onDrain socket callback = runEffectFn3 onSocketImpl "drain" socket callback
 
 -- | Attaches the callback as a listener to the `'end'` event.
 -- |
 -- | `'end'` is emitted when the other end of the `Socket` sends a `FIN` packet.
 onEnd :: Socket -> Effect Unit -> Effect Unit
-onEnd socket callback = runEffectFn2 onEndImpl socket callback
-
-foreign import onErrorServerImpl :: EffectFn2 Server (EffectFn1 Error Unit) Unit
+onEnd socket callback = runEffectFn3 onSocketImpl "end" socket callback
 
 -- | Attaches the callback as a listener to the `'error'` event.
 -- |
 -- | `'error'` is emitted when an error occurs.
 onErrorServer :: Server -> (Error -> Effect Unit) -> Effect Unit
 onErrorServer server callback =
-  runEffectFn2 onErrorServerImpl server (mkEffectFn1 \error -> callback error)
-
-foreign import onErrorSocketImpl :: EffectFn2 Socket (EffectFn1 Error Unit) Unit
+  runEffectFn3
+    onServerImpl
+    "error"
+    server
+    (mkEffectFn1 \error -> callback error)
 
 -- | Attaches the callback as a listener to the `'error'` event.
 -- |
@@ -550,46 +544,43 @@ foreign import onErrorSocketImpl :: EffectFn2 Socket (EffectFn1 Error Unit) Unit
 -- | `'close'` is emitted directly after this event.
 onErrorSocket :: Socket -> (Error -> Effect Unit) -> Effect Unit
 onErrorSocket socket callback =
-  runEffectFn2 onErrorSocketImpl socket (mkEffectFn1 \error -> callback error)
-
-foreign import onListeningImpl :: EffectFn2 Server (Effect Unit) Unit
+  runEffectFn3 onSocketImpl "error" socket (mkEffectFn1 \err -> callback err)
 
 -- | Attaches the callback as a listener to the `'listening'` event.
 -- |
 -- | `'listening'` is emitted when the `Server` has been bound.
 onListening :: Server -> Effect Unit -> Effect Unit
-onListening server callback = runEffectFn2 onListeningImpl server callback
-
-foreign import onLookupImpl :: EffectFn2 Socket (EffectFn4 (Nullable Error) (Nullable String) (Nullable (Nullable Int)) (Nullable String) Unit) Unit
+onListening server callback =
+  runEffectFn3 onServerImpl "listening" server callback
 
 -- | Attaches the callback as a listener to the `'lookup'` event.
 -- |
 -- | `'lookup'` is emitted after resolving the hostname but before connecting.
 onLookup :: Socket -> (Either Error Lookup -> Effect Unit) -> Effect Unit
 onLookup socket callback =
-  runEffectFn2 onLookupImpl socket $ mkEffectFn4 \err' address'' family' host' ->
+  runEffectFn3 onSocketImpl "lookup" socket $ mkEffectFn4 \err' address'' family' host' ->
     case toMaybe err', toMaybe address'', toMaybe family', toMaybe host' of
       Just err, _, _, _ -> callback (Left err)
       Nothing, Just address', Just family, Just host ->
         callback (Right { address: address', family: toMaybe family, host })
       _, _, _, _ -> mempty
 
-foreign import onReadyImpl :: EffectFn2 Socket (Effect Unit) Unit
-
 -- | Attaches the callback as a listener to the `'ready'` event.
 -- |
 -- | `'ready'` is emitted when the `Socket` is ready to be used.
 onReady :: Socket -> Effect Unit -> Effect Unit
-onReady socket callback = runEffectFn2 onReadyImpl socket callback
+onReady socket callback = runEffectFn3 onSocketImpl "ready" socket callback
 
-foreign import onTimeoutImpl :: EffectFn2 Socket (Effect Unit) Unit
+foreign import onServerImpl :: forall f. EffectFn3 String Server (f Unit) Unit
+
+foreign import onSocketImpl :: forall a f. EffectFn3 String Socket (f Unit) a
 
 -- | Attaches the callback as a listener to the `'timeout'` event.
 -- |
 -- | `'timeout'` is emitted if the `Socket` times out from inactivity.
 -- | The `Socket` is still open and should be manually closed.
 onTimeout :: Socket -> Effect Unit -> Effect Unit
-onTimeout socket callback = runEffectFn2 onTimeoutImpl socket callback
+onTimeout socket callback = runEffectFn3 onSocketImpl "timeout" socket callback
 
 foreign import pauseImpl :: EffectFn1 Socket Unit
 

@@ -76,20 +76,12 @@ exports.localPortImpl = function (socket) {
   return socket.localPort;
 };
 
-exports.onCloseServerImpl = function (server, callback) {
-  server.on("close", callback);
+exports.onServerImpl = function (event, server, callback) {
+  server.on(event, callback);
 };
 
-exports.onCloseSocketImpl = function (socket, callback) {
-  socket.on("close", callback);
-};
-
-exports.onConnectImpl = function (socket, callback) {
-  socket.on("connect", callback);
-};
-
-exports.onConnectionImpl = function (server, callback) {
-  server.on("connection", callback);
+exports.onSocketImpl = function (event, socket, callback) {
+  socket.on(event, callback);
 };
 
 exports.onDataImpl = function (socket, callbackBuffer, callbackString) {
@@ -100,38 +92,6 @@ exports.onDataImpl = function (socket, callbackBuffer, callbackString) {
       callbackBuffer(data);
     }
   });
-};
-
-exports.onDrainImpl = function (socket, callback) {
-  socket.on("drain", callback);
-};
-
-exports.onEndImpl = function (socket, callback) {
-  socket.on("end", callback);
-};
-
-exports.onErrorServerImpl = function (server, callback) {
-  server.on("error", callback);
-};
-
-exports.onErrorSocketImpl = function (socket, callback) {
-  socket.on("error", callback);
-};
-
-exports.onListeningImpl = function (server, callback) {
-  server.on("listening", callback);
-};
-
-exports.onLookupImpl = function (socket, callback) {
-  socket.on("lookup", callback);
-};
-
-exports.onReadyImpl = function (socket, callback) {
-  socket.on("ready", callback);
-};
-
-exports.onTimeoutImpl = function (socket, callback) {
-  socket.on("timeout", callback);
 };
 
 exports.pauseImpl = function (socket) {
