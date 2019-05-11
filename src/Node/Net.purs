@@ -8,14 +8,19 @@ module Node.Net
   , Socket
   , SocketOptions
   , address
-  , allowHalfOpen
-  , backlog
   , bufferSize
   , bytesRead
   , bytesWritten
   , close
   , connect
+  , connectFamily
+  , connectHints
+  , connectHost
   , connectICP
+  , connectLocalAddress
+  , connectLocalPort
+  , connectPath
+  , connectPort
   , connectTCP
   , connecting
   , createConnection
@@ -26,24 +31,24 @@ module Node.Net
   , destroyed
   , end
   , endString
-  , exclusive
-  , family
-  , fd
   , getConnections
-  , hints
-  , host
-  , ipv6Only
   , isIP
   , isIPv4
   , isIPv6
   , listen
+  , listenBacklog
+  , listenExclusive
+  , listenHost
   , listenICP
+  , listenIpv6Only
+  , listenPath
+  , listenPort
+  , listenReadableAll
   , listenTCP
+  , listenWritableAll
   , listening
   , localAddress
-  , localAddressOption
   , localPort
-  , localPortOption
   , onCloseServer
   , onCloseSocket
   , onConnect
@@ -57,24 +62,26 @@ module Node.Net
   , onLookup
   , onReady
   , onTimeout
-  , path
   , pause
-  , pauseOnConnect
   , pending
-  , port
-  , readable
-  , readableAll
   , remoteAddress
   , remoteFamily
   , remotePort
   , resume
+  , serverAllowHalfOpen
+  , serverPauseOnConnect
   , setEncoding
   , setKeepAlive
   , setNoDelay
   , setTimeout
-  , timeout
-  , writable
-  , writableAll
+  , socketAllowHalfOpen
+  , socketFd
+  , socketHost
+  , socketPath
+  , socketPort
+  , socketReadable
+  , socketTimeout
+  , socketWritable
   , write
   , writeString
   ) where
@@ -160,16 +167,6 @@ address server = ado
     port <- readProp "port" value >>= readInt
     in { address, family, port }
 
--- | Allows half open TCP connections.
--- | Defaults to `false`.
-allowHalfOpen :: forall options. Option options Boolean
-allowHalfOpen = opt "allowHalfOpen"
-
--- | Maximum number of pending connections.
--- | Defaults to `511`.
-backlog :: Option ListenOptions Int
-backlog = opt "backlog"
-
 foreign import bufferSizeImpl :: Socket -> Effect (Nullable Int)
 
 -- | The number of characters buffered to be written on a `Socket`.
@@ -201,17 +198,53 @@ foreign import connectImpl :: Socket -> Foreign -> Effect Unit -> Effect Unit
 connect :: Socket -> Options ConnectOptions -> Effect Unit -> Effect Unit
 connect socket opts = connectImpl socket (options opts)
 
+-- | Version of IP stack, either `4` or `6`.
+-- | Defaults to `4`.
+connectFamily :: Option ConnectOptions Int
+connectFamily = opt "family"
+
+-- | DNS lookup hints.
+connectHints :: Option ConnectOptions Int
+connectHints = opt "hints"
+
+-- | The host to configure TCP `Socket`s.
+-- |
+-- | Determines the host the `Socket` will attempt to connect to.
+-- | Defaults to `localhost`.
+connectHost :: Option ConnectOptions String
+connectHost = opt "host"
+
 -- | Creates a custom ICP connection on the `Socket`.
 -- | Normally, `createConnectionICP` should be used to create the socket.
 connectICP :: Socket -> String -> Effect Unit -> Effect Unit
-connectICP socket path' =
-  connectImpl socket (options $ path := path')
+connectICP socket path =
+  connectImpl socket (options $ connectPath := path)
+
+-- | Address the `Socket` should connect from.
+connectLocalAddress :: Option ConnectOptions String
+connectLocalAddress = opt "localAddress"
+
+-- | Port the `Socket` should connect from.
+connectLocalPort :: Option ConnectOptions Int
+connectLocalPort = opt "localPort"
+
+-- | The path to configure ICP `Socket`s.
+-- |
+-- | Determines the ICP endpoint the `Socket` will attempt to connect to.
+connectPath :: Option ConnectOptions String
+connectPath = opt "path"
+
+-- | The port to configure TCP `Server`s.
+-- |
+-- | Determines the TCP endpoint the `Server` will attempt to listen on.
+connectPort :: Option ConnectOptions Int
+connectPort = opt "port"
 
 -- | Creates a custom TCP connection on the `Socket`.
 -- | Normally, `createConnectionTCP` should be used to create the socket.
 connectTCP :: Socket -> Int -> String -> Effect Unit -> Effect Unit
-connectTCP socket port' host' =
-  connectImpl socket (options $ host := host' <> port := port')
+connectTCP socket port host =
+  connectImpl socket (options $ connectHost := host <> connectPort := port)
 
 -- | Returns `true` if `connect` was called, but the `'connect'` event hasn't
 -- | been emitted yet.
@@ -230,15 +263,15 @@ createConnection opts = createConnectionImpl (options opts)
 -- | returns the `Socket`, adds the callback as a one-time listener for the
 -- | `'connect'` event, and emits the `'connect'` event.
 createConnectionICP :: String -> Effect Unit -> Effect Socket
-createConnectionICP path' =
-  createConnectionImpl (options $ path := path')
+createConnectionICP path =
+  createConnectionImpl (options $ socketPath := path)
 
 -- | Creates a TCP `Socket`, initiates a connection,
 -- | returns the `Socket`, adds the callback as a one-time listener for the
 -- | `'connect'` event, and emits the `'connect'` event.
 createConnectionTCP :: Int -> String -> Effect Unit -> Effect Socket
-createConnectionTCP port' host' =
-  createConnectionImpl (options $ host := host' <> port := port')
+createConnectionTCP port host =
+  createConnectionImpl (options $ socketHost := host <> socketPort := port)
 
 foreign import createServerImpl :: Foreign -> (Socket -> Effect Unit) -> Effect Server
 
@@ -260,12 +293,6 @@ destroy socket err = destroyImpl socket (toNullable err)
 -- | data.
 foreign import destroyed :: Socket -> Effect Boolean
 
--- | When `true`, the handle cannot be shared and will result in an error.
--- | When `false`, the handle can be shared.
--- | Defaults to `false`.
-exclusive :: Option ListenOptions Boolean
-exclusive = opt "exclusive"
-
 -- | Send a `FIN` packet to half-close the `Socket`.
 -- | The server might still send more data.
 -- | Invokes the callback after the `Socket` is finished.
@@ -276,16 +303,6 @@ foreign import end :: Socket -> Buffer -> Effect Unit -> Effect Unit
 -- | Invokes the callback after the `Socket` is finished.
 foreign import endString :: Socket -> String -> Encoding -> Effect Unit -> Effect Unit
 
--- | Version of IP stack, either `4` or `6`.
--- | Defaults to `4`.
-family :: Option ConnectOptions Int
-family = opt "family"
-
--- | Creates a `Socket` around the given `FileDescriptor`.
--- | If not specified, creates a new `Socket`.
-fd :: Option SocketOptions FileDescriptor
-fd = opt "fd"
-
 foreign import getConnectionsImpl :: Server -> (Nullable Error -> Nullable Int -> Effect Unit) -> Effect Unit
 
 -- | Returns the number of concurrent connections to the `Server`.
@@ -295,27 +312,6 @@ getConnections server callback = getConnectionsImpl server \err' count' ->
     Just err, _ -> callback (Left err)
     _, Just count -> callback (Right count)
     _, _ -> mempty
-
--- | DNS lookup hints.
-hints :: Option ConnectOptions Int
-hints = opt "hints"
-
--- | The host to configure TCP `Server`s and `Socket`s.
--- |
--- | When used as a `ListenOptions` or `ServerOptions` option,
--- | determines the host the `Server` will attempt to listen on.
--- | Defaults to IPv6 `::` if available, and IPv4 `0.0.0.0` otherwise.
--- |
--- | When used as a `ConnectOptions` or `SocketOptions` option,
--- | determines the host the `Socket` will attempt to connect to.
--- | Defaults to `localhost`.
-host :: forall options. Option options String
-host = opt "host"
-
--- | When `true`, only binds to IPv6 hosts and not also to IPv4 hosts.
--- | Defaults to `false`.
-ipv6Only :: Option ListenOptions Boolean
-ipv6Only = opt "ipv6Only"
 
 -- | Returns `4` if the `String` is a valid IPv4 address, `6` if the `String`
 -- | is a valid IPv6 address, and `0` otherwise.
@@ -337,19 +333,65 @@ foreign import listenImpl :: Server -> Foreign -> Effect Unit -> Effect Unit
 listen :: Server -> Options ListenOptions -> Effect Unit -> Effect Unit
 listen server opts = listenImpl server (options opts)
 
+-- | Maximum number of pending connections.
+-- | Defaults to `511`.
+listenBacklog :: Option ListenOptions Int
+listenBacklog = opt "backlog"
+
+-- | When `true`, the handle cannot be shared and will result in an error.
+-- | When `false`, the handle can be shared.
+-- | Defaults to `false`.
+listenExclusive :: Option ListenOptions Boolean
+listenExclusive = opt "exclusive"
+
+-- | The host to configure TCP `Server`s.
+-- |
+-- | Determines the host the `Server` will attempt to listen on.
+-- | Defaults to IPv6 `::` if available, and IPv4 `0.0.0.0` otherwise.
+listenHost :: Option ListenOptions String
+listenHost = opt "host"
+
 -- | Starts the `Server` as an ICP `Server` listening for connections,
 -- | adds the callback as a listener to the `'listening'` event, and emits the
 -- | `'listening'` event.
 listenICP :: Server -> String -> Int -> Effect Unit -> Effect Unit
-listenICP server path' backlog' =
-  listenImpl server (options $ backlog := backlog' <> path := path')
+listenICP server path backlog =
+  listenImpl server (options $ listenBacklog := backlog <> listenPath := path)
+
+-- | When `true`, only binds to IPv6 hosts and not also to IPv4 hosts.
+-- | Defaults to `false`.
+listenIpv6Only :: Option ListenOptions Boolean
+listenIpv6Only = opt "ipv6Only"
+
+-- | The path to configure ICP `Server`s.
+-- |
+-- | Determines the ICP endpoint the `Server` will attempt to listen on.
+listenPath :: Option ListenOptions String
+listenPath = opt "path"
+
+-- | The port to configure TCP `Server`s.
+-- |
+-- | Determines the TCP endpoint the `Server` will attempt to listen on.
+-- | When `0`, the OS will assign an arbitrary port.
+listenPort :: Option ListenOptions Int
+listenPort = opt "port"
+
+-- | Makes the ICP pipe readable for all users.
+-- | Defaults to `false`.
+listenReadableAll :: Option ListenOptions Boolean
+listenReadableAll = opt "readableAll"
 
 -- | Starts the `Server` as a TCP `Server` listening for connections,
 -- | adds the callback as a listener to the `'listening'` event, and emits the
 -- | `'listening'` event.
 listenTCP :: Server -> Int -> String -> Int -> Effect Unit -> Effect Unit
-listenTCP server port' host' backlog' =
-  listenImpl server (options $ backlog := backlog' <> host := host' <> port := port')
+listenTCP server port host backlog =
+  listenImpl server (options $ listenBacklog := backlog <> listenHost := host <> listenPort := port)
+
+-- | Makes the ICP pipe writable for all users.
+-- | Defaults to `false`.
+listenWritableAll :: Option ListenOptions Boolean
+listenWritableAll = opt "writableAll"
 
 -- | Returns `true` if the `Server` is listening for connections, and `false`
 -- | otherwise.
@@ -365,10 +407,6 @@ localAddress socket = ado
   address <- localAddressImpl socket
   in toMaybe address
 
--- | Address the `Socket` should connect from.
-localAddressOption :: Option ConnectOptions String
-localAddressOption = opt "localAddress"
-
 foreign import localPortImpl :: Socket -> Effect (Nullable Int)
 
 -- | Attempts to return the port a client is connecting on.
@@ -378,10 +416,6 @@ localPort :: Socket -> Effect (Maybe Int)
 localPort socket = ado
   port <- localPortImpl socket
   in toMaybe port
-
--- | Port the `Socket` should connect from.
-localPortOption :: Option ConnectOptions Int
-localPortOption = opt "localPort"
 
 -- | Attaches the callback as a listener to the `'close'` event.
 -- |
@@ -447,11 +481,11 @@ foreign import onLookupImpl :: Socket -> (Nullable Error -> Nullable String -> N
 -- |
 -- | `'lookup'` is emitted after resolving the hostname but before connecting.
 onLookup :: Socket -> (Either Error Lookup -> Effect Unit) -> Effect Unit
-onLookup socket callback = onLookupImpl socket \err' address'' family'' host'' ->
-  case toMaybe err', toMaybe address'', toMaybe family'', toMaybe host'' of
+onLookup socket callback = onLookupImpl socket \err' address'' family' host' ->
+  case toMaybe err', toMaybe address'', toMaybe family', toMaybe host' of
     Just err, _, _, _ -> callback (Left err)
-    Nothing, Just address', Just family', Just host' ->
-      callback (Right { address: address', family: toMaybe family', host: host' })
+    Nothing, Just address', Just family, Just host ->
+      callback (Right { address: address', family: toMaybe family, host })
     _, _, _, _ -> mempty
 
 -- | Attaches the callback as a listener to the `'ready'` event.
@@ -465,48 +499,12 @@ foreign import onReady :: Socket -> Effect Unit -> Effect Unit
 -- | The `Socket` is still open and should be manually closed.
 foreign import onTimeout :: Socket -> Effect Unit -> Effect Unit
 
--- | The path to configure ICP `Server`s and `Socket`s.
--- |
--- | When used as a `ListenOptions` or `ServerOptions` option,
--- | determines the ICP endpoint the `Server` will attempt to listen on.
--- |
--- | When used as a `ConnectOptions` or `SocketOptions` option,
--- | determines the ICP endpoint the `Socket` will attempt to connect to.
-path :: forall options. Option options String
-path = opt "path"
-
 -- | Pauses `'data'` events from being emitted.
 foreign import pause :: Socket -> Effect Unit
-
--- | When `true`, pauses the `Socket` on incomming connections.
--- | Defaults to `false`.
-pauseOnConnect :: Option ServerOptions Boolean
-pauseOnConnect = opt "pauseOnConnect"
 
 -- | Returns `true` if the `Socket` is not connected yet.
 -- | Returns `false` otherwise.
 foreign import pending :: Socket -> Effect Boolean
-
--- | The port to configure TCP `Server`s and `Socket`s.
--- |
--- | When used as a `ListenOptions` or `ServerOptions` option,
--- | determines the TCP endpoint the `Server` will attempt to listen on.
--- | When `0`, the OS will assign an arbitrary port.
--- |
--- | When used as a `ConnectOptions` or `SocketOptions` option,
--- | determines the TCP endpoint the `Socket` will attempt to connect to.
-port :: forall options. Option options Int
-port = opt "port"
-
--- | Allows reads if a `FileDescriptor` is also set.
--- | Defaults to `false`.
-readable :: Option SocketOptions Boolean
-readable = opt "readable"
-
--- | Makes the ICP pipe readable for all users.
--- | Defaults to `false`.
-readableAll :: Option ListenOptions Boolean
-readableAll = opt "readableAll"
 
 foreign import remoteAddressImpl :: Socket -> Effect (Nullable String)
 
@@ -536,6 +534,16 @@ remotePort socket = ado
 -- | Resumes emitting `'data'` events.
 foreign import resume :: Socket -> Effect Unit
 
+-- | Allows half open TCP connections.
+-- | Defaults to `false`.
+serverAllowHalfOpen :: Option ServerOptions Boolean
+serverAllowHalfOpen = opt "allowHalfOpen"
+
+-- | When `true`, pauses the `Socket` on incomming connections.
+-- | Defaults to `false`.
+serverPauseOnConnect :: Option ServerOptions Boolean
+serverPauseOnConnect = opt "pauseOnConnect"
+
 -- | Sets the `Encoding` for the data read on the `Socket`.
 foreign import setEncoding :: Socket -> Encoding -> Effect Unit
 
@@ -555,20 +563,49 @@ foreign import setNoDelay :: Socket -> Boolean -> Effect Unit
 -- | Adds the callback as a listener for the `'timeout'` event.
 foreign import setTimeout :: Socket -> Int -> Effect Unit -> Effect Unit
 
+-- | Allows half open TCP connections.
+-- | Defaults to `false`.
+socketAllowHalfOpen :: Option SocketOptions Boolean
+socketAllowHalfOpen = opt "allowHalfOpen"
+
+-- | Creates a `Socket` around the given `FileDescriptor`.
+-- | If not specified, creates a new `Socket`.
+socketFd :: Option SocketOptions FileDescriptor
+socketFd = opt "fd"
+
+-- | The host to configure TCP `Socket`s.
+-- |
+-- | Determines the host the `Socket` will attempt to connect to.
+-- | Defaults to `localhost`.
+socketHost :: Option SocketOptions String
+socketHost = opt "host"
+
+-- | The path to configure ICP `Socket`s.
+-- |
+-- | Determines the ICP endpoint the `Socket` will attempt to connect to.
+socketPath :: Option SocketOptions String
+socketPath = opt "path"
+
+-- | The port to configure TCP `Socket`s.
+-- |
+-- | Determines the TCP endpoint the `Socket` will attempt to connect to.
+socketPort :: Option SocketOptions Int
+socketPort = opt "port"
+
+-- | Allows reads if a `FileDescriptor` is also set.
+-- | Defaults to `false`.
+socketReadable :: Option SocketOptions Boolean
+socketReadable = opt "readable"
+
 -- | Passed to `setTimeout` when the `Socket` is created but before it starts
 -- | the connection.
-timeout :: Option SocketOptions Int
-timeout = opt "timeout"
+socketTimeout :: Option SocketOptions Int
+socketTimeout = opt "timeout"
 
 -- | Allows writes if a `FileDescriptor` is also set.
 -- | Defaults to `false`.
-writable :: Option SocketOptions Boolean
-writable = opt "writable"
-
--- | Makes the ICP pipe writable for all users.
--- | Defaults to `false`.
-writableAll :: Option ListenOptions Boolean
-writableAll = opt "writableAll"
+socketWritable :: Option SocketOptions Boolean
+socketWritable = opt "writable"
 
 -- | Sends data on the `Socket` and invokes the callback after the data is
 -- | finally written.
