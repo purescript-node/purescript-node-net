@@ -147,7 +147,7 @@ foreign import addressImpl :: EffectFn1 Server (Nullable Foreign)
 
 -- | Attempts to return the bound address of a `Server`.
 -- |
--- | If the `Server` is not listening, no `Nothing` is returned.
+-- | If the `Server` is not listening, `Nothing` is returned.
 -- | If the `Server` is ICP, it will return a `String`.
 -- | If the `Server` is TCP, it will return an `Address`.
 address :: Server -> Effect (Maybe (Either Address String))
@@ -458,7 +458,7 @@ foreign import localPortImpl :: EffectFn1 Socket (Nullable Int)
 
 -- | Attempts to return the port a client is connecting on.
 -- | E.g. if a client connects from `80`,
--- | the result would be `Just "80"`.
+-- | the result would be `Just 80`.
 localPort :: Socket -> Effect (Maybe Int)
 localPort socket = do
   port <- runEffectFn1 localPortImpl socket
