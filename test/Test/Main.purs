@@ -8,29 +8,29 @@ import Effect (Effect)
 import Effect.Console (errorShow, infoShow, logShow)
 import Node.Buffer (toString)
 import Node.Encoding (Encoding(..))
-import Node.Net as Node.Net
+import Node.Net.Server as Node.Net.Server
 import Node.Net.Socket as Node.Net.Socket
 
 main :: Effect Unit
 main = do
-  server <- Node.Net.createServer mempty \socket -> do
+  server <- Node.Net.Server.createServer mempty \socket -> do
     infoShow { _message: "Server received connection" }
     void $ Node.Net.Socket.writeString socket "Hello socket\n" UTF8 mempty
     Node.Net.Socket.endString socket "Server is ending connection\n" UTF8 mempty
 
-  Node.Net.onCloseServer server do
+  Node.Net.Server.onClose server do
     infoShow { _message: "Server closed" }
-  Node.Net.onConnection server \socket -> do
+  Node.Net.Server.onConnection server \socket -> do
     addr <- Node.Net.Socket.localAddress socket
     port <- Node.Net.Socket.localPort socket
     infoShow { _message: "Connection successfully made", addr, port }
-  Node.Net.onErrorServer server \err -> do
+  Node.Net.Server.onError server \err -> do
     infoShow { _message: "Server had an error", err }
-  Node.Net.onListening server do
+  Node.Net.Server.onListening server do
     infoShow { _message: "Server is listening" }
 
-  Node.Net.listenTCP server 0 "localhost" 511 do
-    addr <- Node.Net.address server
+  Node.Net.Server.listenTCP server 0 "localhost" 511 do
+    addr <- Node.Net.Server.address server
     infoShow { _message: "Opened server", addr }
     case addr of
       Just (Left { port }) -> do
@@ -52,7 +52,7 @@ main = do
           infoShow { _message: "Socket drained" }
         Node.Net.Socket.onEnd socket do
           infoShow { _message: "Socket ended, closing server" }
-          Node.Net.close server mempty
+          Node.Net.Server.close server mempty
         Node.Net.Socket.onError socket \err ->
           errorShow { _message: "Socket had an error", err }
         Node.Net.Socket.onLookup socket case _ of
@@ -69,6 +69,6 @@ main = do
 
       Just (Right endpoint) -> do
         errorShow { _message: "Server unexpectedly connected over ICP" }
-        Node.Net.close server mempty
+        Node.Net.Server.close server mempty
 
-      _ -> Node.Net.close server mempty
+      _ -> Node.Net.Server.close server mempty
