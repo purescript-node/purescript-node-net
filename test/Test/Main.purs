@@ -48,7 +48,7 @@ main = do
             bufferString <- toString UTF8 buffer
             logShow { _message: "Converted to a `String`", buffer, bufferString }
           Right string -> logShow { _message: "Received some data", string }
-        void $ Node.Net.Socket.onDrain socket do
+        Node.Net.Socket.onDrain socket do
           infoShow { _message: "Socket drained" }
         Node.Net.Socket.onEnd socket do
           infoShow { _message: "Socket ended, closing server" }

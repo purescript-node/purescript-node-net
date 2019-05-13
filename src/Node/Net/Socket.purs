@@ -294,7 +294,7 @@ onData socket callback =
 -- | Attaches the callback as a listener to the `'drain'` event.
 -- |
 -- | `'drain'` is emitted when the write buffer is empty.
-onDrain :: Socket -> Effect Unit -> Effect Boolean
+onDrain :: Socket -> Effect Unit -> Effect Unit
 onDrain socket callback = runEffectFn3 onImpl "drain" socket callback
 
 -- | Attaches the callback as a listener to the `'end'` event.
@@ -311,7 +311,7 @@ onError :: Socket -> (Error -> Effect Unit) -> Effect Unit
 onError socket callback =
   runEffectFn3 onImpl "error" socket (mkEffectFn1 \err -> callback err)
 
-foreign import onImpl :: forall a f. EffectFn3 String Socket (f Unit) a
+foreign import onImpl :: forall f. EffectFn3 String Socket (f Unit) Unit
 
 -- | Attaches the callback as a listener to the `'lookup'` event.
 -- |
