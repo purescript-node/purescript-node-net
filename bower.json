@@ -12,19 +12,19 @@
     "output"
   ],
   "dependencies": {
-    "purescript-effect": ">= 1.0.0 < 3",
-    "purescript-either": ">= 1.0.0 < 5",
-    "purescript-exceptions": ">= 4.0.0 < 5",
-    "purescript-foreign": ">= 5.0.0 < 6",
-    "purescript-maybe": ">= 1.0.0 < 5",
-    "purescript-node-buffer": ">= 5.0.0 < 6",
-    "purescript-node-fs": ">= 5.0.0 < 6",
-    "purescript-nullable": ">= 3.0.0 < 5",
-    "purescript-options": ">= 1.0.0 < 6",
-    "purescript-prelude": ">= 4.0.0 < 5",
-    "purescript-transformers": ">= 1.0.0 < 5"
+    "purescript-effect": "master",
+    "purescript-either": "master",
+    "purescript-exceptions": "master",
+    "purescript-foreign": "master",
+    "purescript-maybe": "master",
+    "purescript-node-buffer": "master",
+    "purescript-node-fs": "master",
+    "purescript-nullable": "main",
+    "purescript-options": "main",
+    "purescript-prelude": "master",
+    "purescript-transformers": "master"
   },
   "devDependencies": {
-    "purescript-console": ">= 4.0.0 < 5"
+    "purescript-console": "master"
   }
 }
