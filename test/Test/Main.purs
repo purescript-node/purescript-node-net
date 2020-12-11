@@ -44,9 +44,10 @@ main = do
           infoShow {_message: "Socket connected"}
         Node.Net.Socket.onData socket case _ of
           Left buffer -> do
-            logShow { _message: "Received some data", buffer }
+            bufferBinary <- toString Binary buffer
+            logShow { _message: "Received some data", bufferBinary }
             bufferString <- toString UTF8 buffer
-            logShow { _message: "Converted to a `String`", buffer, bufferString }
+            logShow { _message: "Converted to a `String`", bufferString }
           Right string -> logShow { _message: "Received some data", string }
         Node.Net.Socket.onDrain socket do
           infoShow { _message: "Socket drained" }
