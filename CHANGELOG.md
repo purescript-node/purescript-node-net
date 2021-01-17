@@ -12,6 +12,16 @@ Bugfixes:
 
 Other improvements:
 
+## [v2.0.0](https://github.com/purescript-node/purescript-node-net/releases/tag/v2.0.0) - 2021-MONTH-DAY
+
+Breaking changes:
+  - Updated dependencies for PureScript 0.14 (#4)
+
+Other improvements:
+  - Migrated CI to GitHub Actions, updated installation instructions to use Spago, and switched from `jshint` to `eslint` (#3)
+  - Added a changelog and pull request template (#6)
+  - Remove `bufferBinary` tests (#5)
+
 ## [v1.0.0](https://github.com/purescript-node/purescript-node-net/releases/tag/v1.0.0) - 2019-05-27
 
 The initial release of the `net` bindings.
