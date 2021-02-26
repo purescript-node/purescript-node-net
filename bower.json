@@ -2,7 +2,7 @@
   "name": "purescript-node-net",
   "repository": {
     "type": "git",
-    "url": "git://github.com/purescript-node/purescript-node-net"
+    "url": "https://github.com/purescript-node/purescript-node-net.git"
   },
   "license": "MIT",
   "ignore": [
@@ -12,19 +12,19 @@
     "output"
   ],
   "dependencies": {
-    "purescript-effect": "master",
-    "purescript-either": "master",
-    "purescript-exceptions": "master",
-    "purescript-foreign": "master",
-    "purescript-maybe": "master",
-    "purescript-node-buffer": "master",
-    "purescript-node-fs": "master",
-    "purescript-nullable": "main",
-    "purescript-options": "main",
-    "purescript-prelude": "master",
-    "purescript-transformers": "master"
+    "purescript-effect": "^3.0.0",
+    "purescript-either": "^5.0.0",
+    "purescript-exceptions": "^5.0.0",
+    "purescript-foreign": "^6.0.0",
+    "purescript-maybe": "^5.0.0",
+    "purescript-node-buffer": "^7.0.0",
+    "purescript-node-fs": "^6.0.0",
+    "purescript-nullable": "^5.0.0",
+    "purescript-options": "^6.0.0",
+    "purescript-prelude": "^5.0.0",
+    "purescript-transformers": "^5.0.0"
   },
   "devDependencies": {
-    "purescript-console": "master"
+    "purescript-console": "^5.0.0"
   }
 }
