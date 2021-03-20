@@ -9,6 +9,7 @@ Breaking changes:
 New features:
 
 Bugfixes:
+Use the correct string expected by nodeJS instead of the PureScript one as encoding.
 
 Other improvements:
 
