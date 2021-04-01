@@ -68,7 +68,7 @@ import Effect.Exception (Error)
 import Effect.Uncurried (EffectFn1, EffectFn2, EffectFn3, EffectFn4, mkEffectFn1, mkEffectFn4, runEffectFn1, runEffectFn2, runEffectFn3, runEffectFn4)
 import Foreign (Foreign)
 import Node.Buffer (Buffer)
-import Node.Encoding (Encoding)
+import Node.Encoding (Encoding, encodingToNode)
 import Node.FS (FileDescriptor)
 
 -- | Options to configure the connecting side of a `Socket`.
@@ -230,14 +230,14 @@ foreign import endImpl :: EffectFn3 Socket Buffer (Effect Unit) Unit
 end :: Socket -> Buffer -> Effect Unit -> Effect Unit
 end socket buffer callback = runEffectFn3 endImpl socket buffer callback
 
-foreign import endStringImpl :: EffectFn4 Socket String Encoding (Effect Unit) Unit
+foreign import endStringImpl :: EffectFn4 Socket String String (Effect Unit) Unit
 
 -- | Send a `FIN` packet to half-close the `Socket`.
 -- | The server might still send more data.
 -- | Invokes the callback after the `Socket` is finished.
 endString :: Socket -> String -> Encoding -> Effect Unit -> Effect Unit
 endString socket str encoding callback =
-  runEffectFn4 endStringImpl socket str encoding callback
+  runEffectFn4 endStringImpl socket str (encodingToNode encoding) callback
 
 foreign import localAddressImpl :: EffectFn1 Socket (Nullable String)
 
@@ -382,11 +382,11 @@ foreign import resumeImpl :: EffectFn1 Socket Unit
 resume :: Socket -> Effect Unit
 resume socket = runEffectFn1 resumeImpl socket
 
-foreign import setEncodingImpl :: EffectFn2 Socket Encoding Unit
+foreign import setEncodingImpl :: EffectFn2 Socket String Unit
 
 -- | Sets the `Encoding` for the data read on the `Socket`.
 setEncoding :: Socket -> Encoding -> Effect Unit
-setEncoding socket encoding = runEffectFn2 setEncodingImpl socket encoding
+setEncoding socket encoding = runEffectFn2 setEncodingImpl socket (encodingToNode encoding)
 
 foreign import setKeepAliveImpl :: EffectFn3 Socket Boolean Int Unit
 
@@ -469,7 +469,7 @@ foreign import writeImpl :: EffectFn3 Socket Buffer (Effect Unit) Boolean
 write :: Socket -> Buffer -> Effect Unit -> Effect Boolean
 write socket buffer callback = runEffectFn3 writeImpl socket buffer callback
 
-foreign import writeStringImpl :: EffectFn4 Socket String Encoding (Effect Unit) Boolean
+foreign import writeStringImpl :: EffectFn4 Socket String String (Effect Unit) Boolean
 
 -- | Sends data on the `Socket` and invokes the callback after the data is
 -- | finally written.
@@ -478,4 +478,4 @@ foreign import writeStringImpl :: EffectFn4 Socket String Encoding (Effect Unit)
 -- | Emits a `'drain'` event after the buffer is free.
 writeString :: Socket -> String -> Encoding -> Effect Unit -> Effect Boolean
 writeString socket str encoding callback =
-  runEffectFn4 writeStringImpl socket str encoding callback
+  runEffectFn4 writeStringImpl socket str (encodingToNode encoding) callback
