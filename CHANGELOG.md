@@ -9,9 +9,13 @@ Breaking changes:
 New features:
 
 Bugfixes:
-  - Fixed the encoding used throughout the project to use the string expected by Node instead of the PureScript representation (#9 by @i-am-the-slime).
 
 Other improvements:
+
+## [v2.0.1](https://github.com/purescript-node/purescript-node-net/releases/tag/v2.0.1) - 2021-04-01
+
+Bugfixes:
+  - Fixed the encoding used throughout the project to use the string expected by Node instead of the PureScript representation (#9 by @i-am-the-slime).
 
 ## [v2.0.0](https://github.com/purescript-node/purescript-node-net/releases/tag/v2.0.0) - 2021-02-26
 
