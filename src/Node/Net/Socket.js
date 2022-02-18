@@ -1,54 +1,54 @@
 "use strict";
 
-var net = require("net");
+import net from "net";
 
-exports.bufferSizeImpl = function (socket) {
+export function bufferSizeImpl(socket) {
   return socket.bufferSize;
-};
+}
 
-exports.bytesReadImpl = function (socket) {
+export function bytesReadImpl(socket) {
   return socket.bytesRead;
-};
+}
 
-exports.bytesWrittenImpl = function (socket) {
+export function bytesWrittenImpl(socket) {
   return socket.bytesWritten;
-};
+}
 
-exports.connectImpl = function (socket, options, callback) {
+export function connectImpl(socket, options, callback) {
   socket.connect(options, callback);
-};
+}
 
-exports.connectingImpl = function (socket) {
+export function connectingImpl(socket) {
   return socket.connecting;
-};
+}
 
-exports.createConnectionImpl = net.createConnection;
+export var createConnectionImpl = net.createConnection;
 
-exports.destroyImpl = function (socket, err) {
+export function destroyImpl(socket, err) {
   socket.destroy(err);
-};
+}
 
-exports.destroyedImpl = function (socket) {
+export function destroyedImpl(socket) {
   return socket.destroyed;
-};
+}
 
-exports.endImpl = function (socket, buffer, callback) {
+export function endImpl(socket, buffer, callback) {
   socket.end(buffer, null, callback);
-};
+}
 
-exports.endStringImpl = function (socket, str, encoding, callback) {
+export function endStringImpl(socket, str, encoding, callback) {
   socket.end(str, encoding, callback);
-};
+}
 
-exports.localAddressImpl = function (socket) {
+export function localAddressImpl(socket) {
   return socket.localAddress;
-};
+}
 
-exports.localPortImpl = function (socket) {
+export function localPortImpl(socket) {
   return socket.localPort;
-};
+}
 
-exports.onDataImpl = function (socket, callbackBuffer, callbackString) {
+export function onDataImpl(socket, callbackBuffer, callbackString) {
   socket.on("data", function (data) {
     if (typeof data === "string") {
       callbackString(data);
@@ -56,56 +56,56 @@ exports.onDataImpl = function (socket, callbackBuffer, callbackString) {
       callbackBuffer(data);
     }
   });
-};
+}
 
-exports.onImpl = function (event, socket, callback) {
+export function onImpl(event, socket, callback) {
   socket.on(event, callback);
-};
+}
 
-exports.pauseImpl = function (socket) {
+export function pauseImpl(socket) {
   socket.pause();
-};
+}
 
-exports.pendingImpl = function (socket) {
+export function pendingImpl(socket) {
   return socket.pending;
-};
+}
 
-exports.remoteAddressImpl = function (socket) {
+export function remoteAddressImpl(socket) {
   return socket.remoteAddress;
-};
+}
 
-exports.remoteFamilyImpl = function (socket) {
+export function remoteFamilyImpl(socket) {
   return socket.remoteFamily;
-};
+}
 
-exports.remotePortImpl = function (socket) {
+export function remotePortImpl(socket) {
   return socket.remotePort;
-};
+}
 
-exports.resumeImpl = function (socket) {
+export function resumeImpl(socket) {
   socket.resume();
-};
+}
 
-exports.setEncodingImpl = function (socket, encoding) {
+export function setEncodingImpl(socket, encoding) {
   socket.setEncoding(encoding);
-};
+}
 
-exports.setKeepAliveImpl = function (socket, enable, initialDelay) {
+export function setKeepAliveImpl(socket, enable, initialDelay) {
   socket.setKeepAlive(enable, initialDelay);
-};
+}
 
-exports.setNoDelayImpl = function (socket, noDelay) {
+export function setNoDelayImpl(socket, noDelay) {
   socket.setNoDelay(noDelay);
-};
+}
 
-exports.setTimeoutImpl = function (socket, timeout, callback) {
+export function setTimeoutImpl(socket, timeout, callback) {
   socket.setTimeout(timeout, callback);
-};
+}
 
-exports.writeImpl = function (socket, buffer, callback) {
+export function writeImpl(socket, buffer, callback) {
   return socket.write(buffer, null, callback);
-};
+}
 
-exports.writeStringImpl = function (socket, str, encoding, callback) {
+export function writeStringImpl(socket, str, encoding, callback) {
   return socket.write(str, encoding, callback);
-};
+}
