@@ -1,9 +1,6 @@
 "use strict";
 
-var net = require("net");
-
-exports.isIP = net.isIP;
-
-exports.isIPv4 = net.isIPv4;
-
-exports.isIPv6 = net.isIPv6;
+import net from "net";
+export const isIP = net.isIP;
+export const isIPv4 = net.isIPv4;
+export const isIPv6 = net.isIPv6;

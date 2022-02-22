@@ -1,29 +1,29 @@
 "use strict";
 
-var net = require("net");
+import net from "net";
 
-exports.addressImpl = function (server) {
+export function addressImpl(server) {
   return server.address();
-};
+}
 
-exports.closeImpl = function (server, callback) {
+export function closeImpl(server, callback) {
   server.close(callback);
-};
+}
 
-exports.createServerImpl = net.createServer;
+export const createServerImpl = net.createServer;
 
-exports.getConnectionsImpl = function (server, callback) {
+export function getConnectionsImpl(server, callback) {
   server.getConnections(callback);
-};
+}
 
-exports.listenImpl = function (server, options, callback) {
+export function listenImpl(server, options, callback) {
   server.listen(options, callback);
-};
+}
 
-exports.listeningImpl = function (socket) {
+export function listeningImpl(socket) {
   return socket.listening;
-};
+}
 
-exports.onImpl = function (event, server, callback) {
+export function onImpl(event, server, callback) {
   server.on(event, callback);
-};
+}
