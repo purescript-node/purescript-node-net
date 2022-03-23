@@ -22,7 +22,7 @@ export function connectingImpl(socket) {
   return socket.connecting;
 }
 
-export var createConnectionImpl = net.createConnection;
+export const createConnectionImpl = net.createConnection;
 
 export function destroyImpl(socket, err) {
   socket.destroy(err);

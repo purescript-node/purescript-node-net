@@ -1,6 +1,6 @@
 "use strict";
 
 import net from "net";
-export var isIP = net.isIP;
-export var isIPv4 = net.isIPv4;
-export var isIPv6 = net.isIPv6;
+export const isIP = net.isIP;
+export const isIPv4 = net.isIPv4;
+export const isIPv6 = net.isIPv6;

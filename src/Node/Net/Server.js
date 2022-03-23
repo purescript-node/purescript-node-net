@@ -10,7 +10,7 @@ export function closeImpl(server, callback) {
   server.close(callback);
 }
 
-export var createServerImpl = net.createServer;
+export const createServerImpl = net.createServer;
 
 export function getConnectionsImpl(server, callback) {
   server.getConnections(callback);
