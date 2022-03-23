@@ -1,5 +1,3 @@
-"use strict";
-
 import net from "net";
 
 export function addressImpl(server) {
