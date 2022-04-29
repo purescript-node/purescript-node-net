@@ -12,6 +12,11 @@ Bugfixes:
 
 Other improvements:
 
+## [v4.0.0](https://github.com/purescript-node/purescript-node-net/releases/tag/v4.0.0) - 2022-04-29
+
+Breaking changes:
+- Update project and deps to PureScript v0.15.0 (#11 by @JordanMartinez, @thomashoneyman, @sigma-andex)
+
 ## [v3.0.0](https://github.com/purescript-node/purescript-node-net/releases/tag/v3.0.0) - 2022-04-27
 
 Breaking changes:
