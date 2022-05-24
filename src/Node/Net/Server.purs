@@ -67,7 +67,7 @@ foreign import addressImpl :: EffectFn1 Server (Nullable Foreign)
 -- | Attempts to return the bound address of a `Server`.
 -- |
 -- | If the `Server` is not listening, `Nothing` is returned.
--- | If the `Server` is ICP, it will return a `String`.
+-- | If the `Server` is ICP or pipe or UNIX domain socket, it will return a `String`.
 -- | If the `Server` is TCP, it will return an `Address`.
 address :: Server -> Effect (Maybe (Either Address String))
 address server = do
