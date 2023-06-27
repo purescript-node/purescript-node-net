@@ -41,7 +41,7 @@ main = do
           false -> infoShow { _message: "Socket closed without an error" }
           true -> errorShow { _message: "Socket closed with an error" }
         Node.Net.Socket.onConnect socket do
-          infoShow {_message: "Socket connected"}
+          infoShow { _message: "Socket connected" }
         Node.Net.Socket.onData socket case _ of
           Left buffer -> do
             bufferString <- toString UTF8 buffer
