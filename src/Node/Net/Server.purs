@@ -42,11 +42,11 @@ import Foreign (F, Foreign, readInt, readString)
 import Foreign.Index (readProp)
 import Node.Net.Socket (Socket)
 
-type Address
-  = { address :: String
-    , family :: String
-    , port :: Int
-    }
+type Address =
+  { address :: String
+  , family :: String
+  , port :: Int
+  }
 
 -- | Options to configure the listening side of a `Server`.
 -- | These options decide whether the `Server` is ICP or TCP.
@@ -76,10 +76,12 @@ address server = do
   where
   hush :: F ~> Maybe
   hush f = either (\_ -> Nothing) Just (runExcept f)
+
   read :: Foreign -> Maybe (Either Address String)
   read value =
     hush (map Left $ readAddress value)
       <|> hush (map Right $ readString value)
+
   readAddress :: Foreign -> F Address
   readAddress value = ado
     address <- readProp "address" value >>= readString

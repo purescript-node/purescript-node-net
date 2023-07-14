@@ -79,11 +79,11 @@ import Node.FS (FileDescriptor)
 -- | Setting `port` will make the `Socket` TCP.
 data ConnectOptions
 
-type Lookup
-  = { address :: String
-    , family :: Maybe Int
-    , host :: String
-    }
+type Lookup =
+  { address :: String
+  , family :: Maybe Int
+  , host :: String
+  }
 
 -- | An ICP endpoint or TCP socket.
 foreign import data Socket :: Type
