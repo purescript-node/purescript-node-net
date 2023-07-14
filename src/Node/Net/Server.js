@@ -1,27 +1,14 @@
-import net from "net";
+import net from "node:net";
 
-export function addressImpl(server) {
-  return server.address();
-}
+export const newServerImpl = () => new net.Server();
+export const newServerOptionsImpl = (o) => new net.Server(o);
 
-export function closeImpl(server, callback) {
-  server.close(callback);
-}
-
-export const createServerImpl = net.createServer;
-
-export function getConnectionsImpl(server, callback) {
-  server.getConnections(callback);
-}
-
-export function listenImpl(server, options, callback) {
-  server.listen(options, callback);
-}
-
-export function listeningImpl(socket) {
-  return socket.listening;
-}
-
-export function onImpl(event, server, callback) {
-  server.on(event, callback);
-}
+export const addressTcpImpl = (s) => s.address();
+export const addressIpcImpl = (s) => s.address();
+export const closeImpl = (s) => s.close();
+export const getConnectionsImpl = (s, cb) => s.getConnections(cb);
+export const listenImpl = (s, o) => s.listen(o);
+export const listeningImpl = (s) => s.listening;
+export const maxConnectionsImpl = (s) => s.maxConnections;
+export const refImpl = (s) => s.ref();
+export const unrefImpl = (s) => s.unref();
