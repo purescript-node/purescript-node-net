@@ -6,14 +6,48 @@ Notable changes to this project are documented in this file. The format is based
 
 Breaking changes:
 - Bumped `node-buffer` and `node-fs` to v9.0.0 and latest release (#12 by @JordanMartinez)
+- Update event handling API to use EventHandle-style API (#16 by @JordanMartinez)
+
+  Before:
+  ```purs
+  foo = do
+    Socket.onClose socket \b -> doSomething
+  ```
+
+  After:
+  ```purs
+  foo = do
+    socket # on_ Socket.closeH \b -> doSomething
+  ```
+- Renamed `isIP` to `isIP'` so that `isIP` returns an ADT
+
+  Previously, `Node.Net.isIP` returned an integer that could be one of two values,
+  4 or 6. This function was renamed to `isIP'`, so that `isIP` could return
+  an algebraic data type value representing that 4 or 6.
+- Distinguish between an IPC and TCP socket/server via phantom type (#16 by @JordanMartinez)
+
+  Some functions (e.g. `Node.Net.Server.address`) return different values depending on whether
+  the provided server is an IPC or TCP server. Similarly, some functions
+  only work on IPC sockets/server rather than TCP ones.
+  
+  Rather than forcing the end-user to handle a case that's not possible,
+  a phantom type was added to `Socket` and `Server` to indicate which 
+  kind of socket/server it is.
+
+  If a function was named `foo` before and it worked differently depending on
+  whether the socket/server was IPC or TCP, it is now suffixed with `Ipc` or `Tcp`
+  to distinguish which it works on.
 
 New features:
+- Added bindings for the `BlockList` class (#16 by @JordanMartinez)
+- Added bindings for the `SocketAddress` class (#16 by @JordanMartinez)
 
 Bugfixes:
 
 Other improvements:
 - Bump CI node to v18 (#12 by @JordanMartinez)
 - Enforce formatting in CI via `purs-tidy` (#12 by @JordanMartinez)
+- Updated all FFI to use uncurried functions (#16 by @JordanMartinez)
 
 ## [v4.0.0](https://github.com/purescript-node/purescript-node-net/releases/tag/v4.0.0) - 2022-04-29
 
