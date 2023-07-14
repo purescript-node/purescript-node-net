@@ -18,9 +18,9 @@ main = do
   server # on_ Server.connectionH \socket -> do
     let sDuplex = Socket.toDuplex socket
     infoShow { _message: "Server received connection" }
-    void $ Stream.writeString sDuplex UTF8 "Hello socket\n" mempty
-    void $ Stream.writeString sDuplex UTF8 "Server is ending connection\n" mempty
-    Stream.end sDuplex mempty
+    void $ Stream.writeString sDuplex UTF8 "Hello socket\n"
+    void $ Stream.writeString sDuplex UTF8 "Server is ending connection\n"
+    Stream.end sDuplex
 
   server # on_ Server.closeH do
     infoShow { _message: "Server closed" }
@@ -51,13 +51,13 @@ main = do
           true -> errorShow { _message: "Socket closed with an error" }
         socket # on_ Socket.connectH do
           infoShow { _message: "Socket connected" }
-        Stream.onData sDuplex \buffer -> do
+        sDuplex # on_ Stream.dataH \buffer -> do
           bufferString <- toString UTF8 buffer
           logShow { _message: "Received some data", bufferString }
-        Stream.onEnd sDuplex do
+        sDuplex # on_ Stream.endH do
           infoShow { _message: "Socket ended, closing server" }
           Server.close server
-        Stream.onError sDuplex \err ->
+        sDuplex # on_ Stream.errorH \err ->
           errorShow { _message: "Socket had an error", err }
         socket # on_ Socket.lookupH \err address family host ->
           case err of
@@ -67,8 +67,8 @@ main = do
               infoShow { _message: "Socket successfully resolved DNS", address, family, host }
         socket # on_ Socket.readyH do
           infoShow { _message: "Socket is ready" }
-          void $ Stream.writeString sDuplex UTF8 "Hello server" mempty
+          void $ Stream.writeString sDuplex UTF8 "Hello server"
         socket # on_ Socket.timeoutH do
           infoShow { _message: "Socket timed out" }
-          void $ Stream.writeString sDuplex UTF8 "Closing connection" mempty
-          Stream.end sDuplex mempty
+          void $ Stream.writeString sDuplex UTF8 "Closing connection"
+          Stream.end sDuplex
