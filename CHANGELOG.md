@@ -5,12 +5,15 @@ Notable changes to this project are documented in this file. The format is based
 ## [Unreleased]
 
 Breaking changes:
+- Bumped `node-buffer` and `node-fs` to v9.0.0 and latest release (#12 by @JordanMartinez)
 
 New features:
 
 Bugfixes:
 
 Other improvements:
+- Bump CI node to v18 (#12 by @JordanMartinez)
+- Enforce formatting in CI via `purs-tidy` (#12 by @JordanMartinez)
 
 ## [v4.0.0](https://github.com/purescript-node/purescript-node-net/releases/tag/v4.0.0) - 2022-04-29
 
