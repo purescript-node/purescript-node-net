@@ -5,6 +5,16 @@ Notable changes to this project are documented in this file. The format is based
 ## [Unreleased]
 
 Breaking changes:
+
+New features:
+
+Bugfixes:
+
+Other improvements:
+
+## [v5.0.0](https://github.com/purescript-node/purescript-node-net/releases/tag/v5.0.0) - 2023-07-19
+
+Breaking changes:
 - Bumped `node-buffer` and `node-fs` to `v9.0.0` (#12, #17 by @JordanMartinez)
 - Update event handling API to use EventHandle-style API (#16 by @JordanMartinez)
 
