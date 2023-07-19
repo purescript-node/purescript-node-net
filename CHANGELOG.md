@@ -5,7 +5,7 @@ Notable changes to this project are documented in this file. The format is based
 ## [Unreleased]
 
 Breaking changes:
-- Bumped `node-buffer` and `node-fs` to v9.0.0 and latest release (#12 by @JordanMartinez)
+- Bumped `node-buffer` and `node-fs` to `v9.0.0` (#12 by @JordanMartinez)
 - Update event handling API to use EventHandle-style API (#16 by @JordanMartinez)
 
   Before:
