@@ -18,7 +18,7 @@
     "purescript-foreign": "^7.0.0",
     "purescript-maybe": "^6.0.0",
     "purescript-node-buffer": "^9.0.0",
-    "purescript-node-fs": "^9.0.0",
+    "purescript-node-fs": "^9.1.0",
     "purescript-nullable": "^6.0.0",
     "purescript-options": "^7.0.0",
     "purescript-prelude": "^6.0.0",

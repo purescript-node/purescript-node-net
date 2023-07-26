@@ -12,6 +12,11 @@ Bugfixes:
 
 Other improvements:
 
+## [v5.1.0](https://github.com/purescript-node/purescript-node-net/releases/tag/v5.1.0) - 2023-07-26
+
+Bugfixes:
+- Bump `node-streams` to `v9.0.0` to fix FFI issues (#18 by @JordanMartinez)
+
 ## [v5.0.0](https://github.com/purescript-node/purescript-node-net/releases/tag/v5.0.0) - 2023-07-19
 
 Breaking changes:
