@@ -10,16 +10,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
 
-      - uses: purescript-contrib/setup-purescript@main
+      - uses: actions/setup-node@v6
         with:
-          purescript: "unstable"
-          purs-tidy: "latest"
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: "18"
+          node-version: "24"
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
@@ -31,5 +27,4 @@ jobs:
         run: npm test
 
       - name: Check formatting
-        run: |
-          purs-tidy check src test
+        run: npm run format:check

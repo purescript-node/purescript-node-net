@@ -27,4 +27,3 @@ export const setTimeoutImpl = (s, msecs) => s.setTimeout(msecs);
 export const timeoutImpl = (s) => s.timeout;
 export const unrefImpl = (s) => s.unRef();
 export const readyStateImpl = (s) => s.readyState;
-
